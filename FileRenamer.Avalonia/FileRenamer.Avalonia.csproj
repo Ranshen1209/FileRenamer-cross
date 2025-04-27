@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <ApplicationIcon>assets/icon.ico</ApplicationIcon>
+        <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
+        <RuntimeIdentifiers>win-x64;win-x86;osx-x64;osx-arm64;linux-x64;linux-arm64</RuntimeIdentifiers>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.2.7"/>
+        <PackageReference Include="Avalonia.Desktop" Version="11.2.7"/>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.7"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.7"/>
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.2.7">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="assets\" />
+        <AvaloniaResource Include="assets\icon.ico" />
+        <AvaloniaResource Include="assets\icon.png" />
+        <AvaloniaResource Include="assets\icon.icns" />
+    </ItemGroup>
+
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+        <AvaloniaBundleIcon Include="assets\icon.icns" />
+    </ItemGroup>
+</Project>

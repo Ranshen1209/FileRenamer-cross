@@ -1,0 +1,49 @@
+# .NET Core / .NET build outputs
+bin/
+obj/
+publish/
+*.dll
+*.exe
+*.pdb
+*.deps.json
+*.runtimeconfig.json
+*.zip
+
+# macOS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Dependency directories
+packages/
+node_modules/
+
+# Temporary files created by build tools
+*.cache
+*.log
+*.tmp
+*.temp
+
+# Ignore specific runtime directories for different platforms
+FileRenamer.Avalonia/bin/
+FileRenamer.Avalonia/obj/
+
+# Ignore published application bundles and zips
+bin/Release/
+publish/*
+
+# Ignore user-specific files
+*.user
+*.userprefs
+
+# Ignore project-specific generated files
+FileRenamer.Avalonia.csproj.nuget.*
+project.assets.json
+project.nuget.cache
+rider.project.model.nuget.info
+rider.project.restore.info
