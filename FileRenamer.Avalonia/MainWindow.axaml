@@ -9,13 +9,9 @@
         Icon="avares://FileRenamer.Avalonia/assets/icon.png"
         CanResize="False"
 
-        TransparencyLevelHint="Mica"  Background="Transparent"
-        ExtendClientAreaToDecorationsHint="True"
-        SystemDecorations="Full" >
+        TransparencyLevelHint="AcrylicBlur" Background="Transparent" ExtendClientAreaToDecorationsHint="True" SystemDecorations="Full" DragDrop.AllowDrop="True" DragDrop.DragOver="Window_DragOver" DragDrop.Drop="Window_Drop">
 
-    <StackPanel Margin="20,40,20,20" Spacing="15"  DragDrop.AllowDrop="True"
-                DragDrop.DragOver="Window_DragOver"
-                DragDrop.Drop="Window_Drop">
+    <StackPanel Margin="20,40,20,20" Spacing="15">
 
 
         <TextBlock Text="将图片或视频文件拖到此处以重命名" HorizontalAlignment="Center" FontSize="14" FontWeight="SemiBold"/>
