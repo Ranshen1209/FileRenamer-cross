@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e
 
 SOLUTION_NAME="FileRenamer.sln"
@@ -15,10 +14,10 @@ declare -a RIDS=(
     "osx-arm64"
 )
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 PROJECT_ROOT="$SCRIPT_DIR"
 
-echo "开始为 $SOLUTION_NAME 进行跨平台构建..."
+echo "开始为 $SOLUTION_NAME 进行跨平台构建 (Windows 和 macOS)..."
 echo "项目根目录: $PROJECT_ROOT"
 echo "输出目录: $PROJECT_ROOT/$OUTPUT_BASE_DIR"
 
@@ -36,22 +35,12 @@ do
     echo "正在为运行时标识符 (RID): $RID 构建"
     echo "--------------------------------------------------"
 
-    if [[ "$RID" == "win-x64" ]]; then
-        OUTPUT_NAME="FileRenamer-Windows-x64"
-    elif [[ "$RID" == "win-x86" ]]; then
-        OUTPUT_NAME="FileRenamer-Windows-x86"
-    elif [[ "$RID" == "osx-x64" ]]; then
-        OUTPUT_NAME="FileRenamer-macOS-x64"
-    elif [[ "$RID" == "osx-arm64" ]]; then
-        OUTPUT_NAME="FileRenamer-macOS-arm64"
-    fi
-
-    RID_OUTPUT_DIR="$PROJECT_ROOT/$OUTPUT_BASE_DIR/$OUTPUT_NAME"
+    RID_OUTPUT_DIR="$PROJECT_ROOT/$OUTPUT_BASE_DIR/$RID"
     mkdir -p "$RID_OUTPUT_DIR"
 
     if [[ "$RID" == "win-x64" || "$RID" == "win-x86" ]]; then
         PUBLISH_SINGLE_FILE="true"
-        echo "为 Windows ($RID) 启用 PublishSingleFile=true"
+        echo "为 Windows 平台 ($RID) 启用 PublishSingleFile=true"
     else
         PUBLISH_SINGLE_FILE="false"
         echo "为 macOS 平台 ($RID) 禁用 PublishSingleFile=false"
@@ -69,7 +58,7 @@ do
 
     if [[ "$RID" == "osx-x64" || "$RID" == "osx-arm64" ]]; then
         echo "为 macOS ($RID) 创建 .app 包..."
-        APP_BUNDLE_DIR="$RID_OUTPUT_DIR/FileRenamer.app"
+        APP_BUNDLE_DIR="$RID_OUTPUT_DIR/FileRenamer.Avalonia.app"
         CONTENTS_DIR="$APP_BUNDLE_DIR/Contents"
         MACOS_DIR="$CONTENTS_DIR/MacOS"
         RESOURCES_DIR="$CONTENTS_DIR/Resources"
@@ -79,7 +68,11 @@ do
 
         mv "$RID_OUTPUT_DIR/"* "$MACOS_DIR/" 2>/dev/null || true
 
-        cp "$PROJECT_ROOT/$PROJECT_DIR/assets/icon.icns" "$RESOURCES_DIR/" 2>/dev/null || true
+        if [ -f "$PROJECT_ROOT/$PROJECT_DIR/assets/icon.icns" ]; then
+             cp "$PROJECT_ROOT/$PROJECT_DIR/assets/icon.icns" "$RESOURCES_DIR/"
+        else
+             echo "警告: 未找到图标文件 $PROJECT_ROOT/$PROJECT_DIR/assets/icon.icns"
+        fi
 
         cat > "$CONTENTS_DIR/Info.plist" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -87,34 +80,39 @@ do
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>FileRenamer</string>
-    <key>CFBundleIdentifier</key>
-    <string>com.yourcompany.filerenamer</string>
-    <key>CFBundleVersion</key>
-    <string>1.0.0</string>
-    <key>CFBundleExecutable</key>
-    <string>FileRenamer</string>
+    <string>FileRenamer.Avalonia</string>
+    <key>CFBundleDisplayName</key>
+    <string>File Renamer</string> <key>CFBundleIdentifier</key>
+    <string>com.yourcompany.filerenamer</string> <key>CFBundleVersion</key>
+    <string>1.0.0</string> <key>CFBundleShortVersionString</key>
+    <string>1.0</string> <key>CFBundleExecutable</key>
+    <string>FileRenamer.Avalonia</string>
     <key>CFBundleIconFile</key>
-    <string>icon.icns</string>
-    <key>CFBundlePackageType</key>
+    <string>icon.icns</string> <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>NSHighResolutionCapable</key>
     <true/>
-</dict>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.14</string> </dict>
 </plist>
 EOF
+        chmod +x "$MACOS_DIR/FileRenamer.Avalonia"
 
         echo ".app 包创建成功: $APP_BUNDLE_DIR"
     fi
 
-    echo "正在为 $OUTPUT_NAME 压缩输出..."
-    (cd "$PROJECT_ROOT/$OUTPUT_BASE_DIR" && zip -qr "$OUTPUT_NAME.zip" "$OUTPUT_NAME")
+    ZIP_FILENAME="FileRenamer-$RID.zip"
+    echo "正在为 $RID 压缩输出到 $ZIP_FILENAME ..."
+    (cd "$PROJECT_ROOT/$OUTPUT_BASE_DIR" && zip -qr "$ZIP_FILENAME" "$RID")
+    echo "压缩完成: $PROJECT_ROOT/$OUTPUT_BASE_DIR/$ZIP_FILENAME"
+
 done
 
 echo "=================================================="
-echo "所有跨平台构建成功完成！"
+echo "Windows 和 macOS 平台的构建成功完成！"
 echo "输出产物位于: $PROJECT_ROOT/$OUTPUT_BASE_DIR"
-echo "每个子目录对应一个特定的运行时标识符 (RID)，并已生成对应的 zip 存档。"
+echo "每个子目录对应一个特定的运行时标识符 (RID)。"
+echo "已为每个平台生成对应的 zip 存档 (格式: FileRenamer-系统-架构.zip)。"
 echo "=================================================="
 
 exit 0
