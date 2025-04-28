@@ -13,8 +13,6 @@ declare -a RIDS=(
     "win-x86"
     "osx-x64"
     "osx-arm64"
-    "linux-x64"
-    "linux-arm64"
 )
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE}" )" &> /dev/null && pwd )
@@ -38,12 +36,22 @@ do
     echo "正在为运行时标识符 (RID): $RID 构建"
     echo "--------------------------------------------------"
 
-    RID_OUTPUT_DIR="$PROJECT_ROOT/$OUTPUT_BASE_DIR/$RID"
+    if [[ "$RID" == "win-x64" ]]; then
+        OUTPUT_NAME="FileRenamer-Windows-x64"
+    elif [[ "$RID" == "win-x86" ]]; then
+        OUTPUT_NAME="FileRenamer-Windows-x86"
+    elif [[ "$RID" == "osx-x64" ]]; then
+        OUTPUT_NAME="FileRenamer-macOS-x64"
+    elif [[ "$RID" == "osx-arm64" ]]; then
+        OUTPUT_NAME="FileRenamer-macOS-arm64"
+    fi
+
+    RID_OUTPUT_DIR="$PROJECT_ROOT/$OUTPUT_BASE_DIR/$OUTPUT_NAME"
     mkdir -p "$RID_OUTPUT_DIR"
 
-    if [[ "$RID" == "win-x64" || "$RID" == "win-x86" || "$RID" == "linux-x64" || "$RID" == "linux-arm64" ]]; then
+    if [[ "$RID" == "win-x64" || "$RID" == "win-x86" ]]; then
         PUBLISH_SINGLE_FILE="true"
-        echo "为 Windows 或 Linux ($RID) 启用 PublishSingleFile=true"
+        echo "为 Windows ($RID) 启用 PublishSingleFile=true"
     else
         PUBLISH_SINGLE_FILE="false"
         echo "为 macOS 平台 ($RID) 禁用 PublishSingleFile=false"
@@ -61,7 +69,7 @@ do
 
     if [[ "$RID" == "osx-x64" || "$RID" == "osx-arm64" ]]; then
         echo "为 macOS ($RID) 创建 .app 包..."
-        APP_BUNDLE_DIR="$RID_OUTPUT_DIR/FileRenamer.Avalonia.app"
+        APP_BUNDLE_DIR="$RID_OUTPUT_DIR/FileRenamer.app"
         CONTENTS_DIR="$APP_BUNDLE_DIR/Contents"
         MACOS_DIR="$CONTENTS_DIR/MacOS"
         RESOURCES_DIR="$CONTENTS_DIR/Resources"
@@ -79,13 +87,13 @@ do
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>FileRenamer.Avalonia</string>
+    <string>FileRenamer</string>
     <key>CFBundleIdentifier</key>
     <string>com.yourcompany.filerenamer</string>
     <key>CFBundleVersion</key>
     <string>1.0.0</string>
     <key>CFBundleExecutable</key>
-    <string>FileRenamer.Avalonia</string>
+    <string>FileRenamer</string>
     <key>CFBundleIconFile</key>
     <string>icon.icns</string>
     <key>CFBundlePackageType</key>
@@ -99,8 +107,8 @@ EOF
         echo ".app 包创建成功: $APP_BUNDLE_DIR"
     fi
 
-    echo "正在为 $RID 压缩输出..."
-    (cd "$PROJECT_ROOT/$OUTPUT_BASE_DIR" && zip -qr "$RID.zip" "$RID")
+    echo "正在为 $OUTPUT_NAME 压缩输出..."
+    (cd "$PROJECT_ROOT/$OUTPUT_BASE_DIR" && zip -qr "$OUTPUT_NAME.zip" "$OUTPUT_NAME")
 done
 
 echo "=================================================="
