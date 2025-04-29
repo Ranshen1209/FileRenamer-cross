@@ -31,9 +31,7 @@ echo "构建项目: $PROJECT_ROOT/$PROJECT_FILE"
 
 for RID in "${RIDS[@]}"
 do
-    echo "--------------------------------------------------"
     echo "正在为运行时标识符 (RID): $RID 构建"
-    echo "--------------------------------------------------"
 
     RID_OUTPUT_DIR="$PROJECT_ROOT/$OUTPUT_BASE_DIR/$RID"
     mkdir -p "$RID_OUTPUT_DIR"
@@ -108,11 +106,9 @@ EOF
 
 done
 
-echo "=================================================="
 echo "Windows 和 macOS 平台的构建成功完成！"
 echo "输出产物位于: $PROJECT_ROOT/$OUTPUT_BASE_DIR"
 echo "每个子目录对应一个特定的运行时标识符 (RID)。"
-echo "已为每个平台生成对应的 zip 存档 (格式: FileRenamer-系统-架构.zip)。"
-echo "=================================================="
+echo "已为每个平台生成对应的 zip 存档。"
 
 exit 0
